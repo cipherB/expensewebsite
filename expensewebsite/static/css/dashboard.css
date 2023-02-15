@@ -2,6 +2,21 @@ body {
   font-size: 0.875rem;
 }
 
+.showPasswordToggle {
+  cursor: pointer;
+  transition: all;
+}
+
+.showPasswordToggle:hover {
+  transform: scale(1.2);
+}
+
+@media (min-width: 768px) {
+.bd-placeholder-img-lg {
+  font-size: 3.5rem;
+}
+}
+
 .feather {
   width: 16px;
   height: 16px;

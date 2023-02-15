@@ -1,4 +1,4 @@
-l{% load static %}
+{% load static %}
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -11,21 +11,20 @@ l{% load static %}
 
     <!-- Bootstrap core CSS -->
     <link
-      href="{% static 'css/bootstrap.css' %}"
+      href="{% static 'css/bootstrap.min.css' %}"
       rel="stylesheet"
     />
     <link
       href="{% static 'css/main.css' %}"
       rel="stylesheet"
     />
-
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet" />
     <style>
       body {
         overflow-x: hidden;
       }
     </style>
-    <!-- Custom styles for this template -->
-    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet" />
   </head>
   <body>
 
