@@ -1,4 +1,5 @@
 {% extends 'base_auth.html' %}
+{% load static %}
 
 {% block content %}
     <div class='row' >
@@ -19,6 +20,8 @@
                                 class='form-control form-control-sm'
                             />
                         </div>
+                        <div class="invalid-feedback" style="display:none" ></div>
+                        <p class="text-sm text-success usernameSuccessOutput"></p>
                         <div class='form-group mb-2' >
                             <input 
                                 type='email'
@@ -28,6 +31,9 @@
                                 class='form-control form-control-sm'
                             />
                         </div>
+                        <div class="invalid-feedback invalid-email-feedback" style="display:none" >
+                        </div>
+                        <p class="text-sm text-success emailSuccessOutput"></p>
                         <div class='form-group mb-2' >
                             <input 
                                 type='password'
@@ -49,4 +55,6 @@
         </div>
         <div class='col-md-4' ></div>
     </div>
+
+    <script src="{% static 'js/register.js' %}" ></script>
 {% endblock  %}
