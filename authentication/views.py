@@ -172,8 +172,23 @@ class VerificationView(View):
         Returns:
             redirect: redirects user to login page
         """
+        try:
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=user_id)
+            if not token_generator.check_token(user, token):
+                return redirect('login'+'user already activated')
+            if user.is_active:
+                return redirect('login')
+            user.is_active = True
+            user.save()
+            messages.success(request, 'Account activated successfully')
+            return redirect("login")
+        #pylint: disable=W0612
+        #pylint: disable=W0718
+        except Exception as ex:
+            pass
         return redirect('login')
-    
+
 class LoginView(View):
     """Login Class 
 
