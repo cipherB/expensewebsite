@@ -1,15 +1,21 @@
 """Authentication Views
 """
 import json
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import EmailMessage
+from django.urls import reverse
+from django.utils.encoding import DjangoUnicodeDecodeError, force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.sites.shortcuts import get_current_site
 from validate_email import validate_email
+from .utils import token_generator
 
 # Create your views here.
+
 
 class UsernameValidationView(View):
     """Username validation view
@@ -17,7 +23,8 @@ class UsernameValidationView(View):
     Args:
         View (Django function): return requests
     """
-    def post(self,request):
+
+    def post(self, request):
         """Get post request from registration page
 
         Args:
@@ -31,15 +38,16 @@ class UsernameValidationView(View):
         username = data['username']
         if not str(username).isalnum():
             return JsonResponse(
-                {'username_error':'Username should only contain alpha-numeric characters.'},
+                {'username_error': 'Username should only contain alpha-numeric characters.'},
                 status=400
-                )
+            )
         if User.objects.filter(username=username).exists():
             return JsonResponse(
-                {'username_error':'Username already exists, enter another one.'},
+                {'username_error': 'Username already exists, enter another one.'},
                 status=409
-                )
-        return JsonResponse({'username_valid':True})
+            )
+        return JsonResponse({'username_valid': True})
+
 
 class EmailValidationView(View):
     """Email validation view
@@ -47,7 +55,8 @@ class EmailValidationView(View):
     Args:
         View (Django function): return requests
     """
-    def post(self,request):
+
+    def post(self, request):
         """Get post request from registration page
 
         Args:
@@ -61,15 +70,16 @@ class EmailValidationView(View):
         email = data['email']
         if not validate_email(email):
             return JsonResponse(
-                {'email_error':'Email is invalid.'},
+                {'email_error': 'Email is invalid.'},
                 status=400
-                )
+            )
         if User.objects.filter(email=email).exists():
             return JsonResponse(
-                {'email_error':'Email already exists, enter another one.'},
+                {'email_error': 'Email already exists, enter another one.'},
                 status=409
-                )
-        return JsonResponse({'email_valid':True})
+            )
+        return JsonResponse({'email_valid': True})
+
 
 class RegistrationView(View):
     """Registration Page View
@@ -77,7 +87,8 @@ class RegistrationView(View):
     Args:
         View (Django function): return requests
     """
-    def get(self,request):
+
+    def get(self, request):
         """Get Request
 
         Args:
@@ -87,6 +98,7 @@ class RegistrationView(View):
             html synthax: returns html page for register
         """
         return render(request, 'authentication/register.html')
+
     def post(self, request):
         """Registration Endpoint post request
 
@@ -107,28 +119,75 @@ class RegistrationView(View):
         }
         if not User.objects.filter(username=username).exists():
             if not User.objects.filter(email=email).exists():
-                if len(password)<6:
+                if len(password) < 6:
                     messages.error(request, 'Password too short')
                     return render(request, 'authentication/register.html', context)
-                user = User.objects.create_user(username=username,email=email)
+                user = User.objects.create_user(username=username, email=email)
                 user.set_password(password)
                 user.is_active = False
                 user.save()
                 # connection = get_connection()
                 # connection.open()
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                domain = get_current_site(request).domain
+                link = reverse('activate', kwargs={
+                               'uidb64': uidb64, 'token': token_generator.make_token(user)})
                 email_subject = "Activate your account"
-                email_body = "Test activation"
+                activate_url = "http://"+domain+link
+                email_body = f"""
+                Hi 
+                {user.username}  
+                Please use this link to verify your account\n {activate_url}"""
                 email_msg = EmailMessage(
                     email_subject,
                     email_body,
-                    'noreply@boluad.com',
-                    [email],
-                    # ['bcc@example.com'],
-                    # reply_to=['another@example.com'],
-                    # headers={'Message-ID': 'foo'},
+                    'dummymail1005@gmail.com',
+                    [email, ],
+                    ['bcc@example.com'],
+                    reply_to=['another@example.com'],
+                    headers={'Message-ID': 'foo'},
                 )
                 email_msg.send(fail_silently=False)
                 #
                 messages.success(request, 'Account successfully created')
                 return render(request, 'authentication/register.html')
         return render(request, 'authentication/register.html')
+
+
+class VerificationView(View):
+    """Verification of Email account to activate user status
+
+    Args:
+        View (class): View class
+    """
+
+    def get(self, request, uidb64, token):
+        """validate and redirect user to login
+
+        Args:
+            request (string): url request
+            uidb64 (string): unique id
+            token (string): user token
+
+        Returns:
+            redirect: redirects user to login page
+        """
+        return redirect('login')
+    
+class LoginView(View):
+    """Login Class 
+
+    Args:
+        View (class): django class library
+    """
+    def get(self, request):
+        """login function
+
+        Args:
+            request (object): url request
+
+        Returns:
+            render: redirects user to login page
+        """
+        return render(request, 'authentication/login.html')
+    

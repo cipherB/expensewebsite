@@ -8,6 +8,7 @@ pillow = "*"
 django = "*"
 psycopg2 = "*"
 validate-email = "*"
+six = "*"
 
 [dev-packages]
 
