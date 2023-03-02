@@ -12,6 +12,7 @@ from django.utils.encoding import DjangoUnicodeDecodeError, force_bytes, force_s
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from validate_email import validate_email
+from django.contrib import auth
 from .utils import token_generator
 
 # Create your views here.
@@ -205,4 +206,47 @@ class LoginView(View):
             render: redirects user to login page
         """
         return render(request, 'authentication/login.html')
+
+    def post(self, request):
+        """login post request
+        Args:
+            request (JSON): data is fetched in JSON format
+
+        Returns:
+            object: returns user credentials for login
+        """
+        username = request.POST['username']
+        password = request.POST['password']
+        if username and password:
+            user = auth.authenticate(username=username, password=password)
+            if user:
+                if user.is_active:
+                    auth.login(request, user)
+                    messages.success(request, 'Welcome '+user.username+', you are now logged in')
+                messages.error(request, 'Account is not active, please check your mail')
+                return redirect("expenses")
+            messages.error(request, 'Invalid credentials, try again')
+            return render(request, 'authentication/login.html')
+        else:
+            messages.error(request, 'Please fill all fields')
+            return render(request, 'authentication/login.html')
+        
+class LogoutView(View):
+    """Logout class
+
+    Args:
+        View (Class): Django class library
+    """
+    def post(self, request):
+        """logout 
+
+        Args:
+            request (JSON): url request
+
+        Returns:
+            null: log user out and navigate user to login page
+        """
+        auth.logout(request)
+        messages.success(request, 'You have been logged out')
+        return redirect('login')
     
