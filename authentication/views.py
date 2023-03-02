@@ -151,7 +151,7 @@ class RegistrationView(View):
                 email_msg.send(fail_silently=False)
                 #
                 messages.success(request, 'Account successfully created')
-                return render(request, 'authentication/register.html')
+                return redirect("login")
         return render(request, 'authentication/register.html')
 
 
@@ -223,14 +223,16 @@ class LoginView(View):
                 if user.is_active:
                     auth.login(request, user)
                     messages.success(request, 'Welcome '+user.username+', you are now logged in')
-                messages.error(request, 'Account is not active, please check your mail')
-                return redirect("expenses")
+                    return redirect("expenses")
+                messages.error(
+                    request, 'Account is not active,please check your email')
+                return render(request, 'authentication/login.html')
             messages.error(request, 'Invalid credentials, try again')
             return render(request, 'authentication/login.html')
         else:
             messages.error(request, 'Please fill all fields')
             return render(request, 'authentication/login.html')
-        
+
 class LogoutView(View):
     """Logout class
 
