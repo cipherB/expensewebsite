@@ -73,6 +73,7 @@ emailField.addEventListener('keyup', (e) => {
 
 const handletoggleInput = (e) => {
     // Toggle password visibility
+    //
     if(showPasswordToggle.textContent==='SHOW') {
         showPasswordToggle.textContent='HIDE';
 
