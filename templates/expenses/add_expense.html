@@ -1,4 +1,15 @@
 {% extends 'base.html' %}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'expenses' %}">Expenses</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Expenses</li>
+        </ol>
+    </nav>
+
+    <form action="{% url 'expenses' %}" method="post" ></form>
+</div>
 {% block content %}
     <h1>Add Expense</h1>
 {% endblock  %}
