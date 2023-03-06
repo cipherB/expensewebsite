@@ -29,3 +29,11 @@ class Category(models.Model):
     """Category Model
     """
     name = models.CharField(max_length=255)
+
+    class Meta:
+        """Change Category plural spelling in admin dashboard
+        """
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return str(self.name)

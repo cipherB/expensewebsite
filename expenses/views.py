@@ -3,6 +3,8 @@
 """
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from .models import Category
+#pylint: disable=E1101
 
 @login_required(login_url='/authentication/login')
 def index(request):
@@ -15,7 +17,11 @@ def index(request):
         html: Returns template for expense website landing page
         
     """
-    return render(request, 'expenses/index.html')
+    categories = Category.objects.all()
+    context = {
+        'categories': categories
+    }
+    return render(request, 'expenses/index.html', context)
 
 
 def add_expense(request):
@@ -28,4 +34,8 @@ def add_expense(request):
         html: Returns template for add expense page
         
     """
-    return render(request,'expenses/add_expense.html')
+    categories = Category.objects.all()
+    context = {
+        'categories': categories
+    }
+    return render(request,'expenses/add_expense.html', context)
