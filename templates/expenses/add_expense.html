@@ -11,7 +11,9 @@
 
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'expenses' %}" method="post" >
+                <form action="{% url 'add-expense' %}" method="post" >
+                    {% include 'partials/_messages.html' %}
+                    {% csrf_token %}
                     <div class="form-group mb-2">
                         <label for="amount" class="form-label">Amount</label>
                         <input 
@@ -19,6 +21,7 @@
                             name="amount" 
                             id="amount" 
                             class="form-control form-control-sm"
+                            value="{{values.amount}}"
                         />
                     </div>
                     <div class="form-group mb-2">
