@@ -9,6 +9,7 @@ const showPasswordToggle = document.querySelector('.showPasswordToggle');
 const submitBtn = document.querySelector('.submit-btn');
 
 usernameField.addEventListener('keyup', (e) => {
+    // Validate username if it exists contains valid characters and above 0
     const usernameVal = e.target.value;
     usernameSuccessOutput.style.display='block';
     usernameSuccessOutput.textContent=`Checking ${usernameVal}`
@@ -25,6 +26,7 @@ usernameField.addEventListener('keyup', (e) => {
         .then(data => {
             usernameSuccessOutput.style.display='none';
             if(data.username_error) {
+                // disable submit button and show error message if invalid
                 submitBtn.disabled = true;
                 usernameField.classList.add("is-invalid");
                 feedbackArea.style.display='block';
@@ -38,6 +40,7 @@ usernameField.addEventListener('keyup', (e) => {
 })
 
 emailField.addEventListener('keyup', (e) => {
+    // Validate user email if it exists, or is a valid email format
     const emailVal = e.target.value;
     emailSuccessOutput.style.display='block';
     emailSuccessOutput.textContent=`Checking ${emailVal}`
@@ -54,6 +57,7 @@ emailField.addEventListener('keyup', (e) => {
         .then(data => {
             emailSuccessOutput.style.display='none';
             if(data.email_error) {
+                // if email is invalid, disable submit button and display error message
                 // submitBtn.setAttribute('disabled','disabled');
                 submitBtn.disabled = true;
                 emailField.classList.add("is-invalid");
@@ -68,6 +72,8 @@ emailField.addEventListener('keyup', (e) => {
 })
 
 const handletoggleInput = (e) => {
+    // Toggle password visibility
+    //
     if(showPasswordToggle.textContent==='SHOW') {
         showPasswordToggle.textContent='HIDE';
 
