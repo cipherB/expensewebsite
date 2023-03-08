@@ -2,16 +2,28 @@
 
 {% block content %}
     <div class="container mt-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'expenses' %}">Expenses</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Add Expenses</li>
-            </ol>
-        </nav>
+        <div class="row mb-4">
+            <div class="col-md-10">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'expenses' %}">Expenses</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit Expense</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-md-2">
+                <a 
+                    href="{% url 'expense-delete' expense.id %}"
+                    class="btn btn-danger btn-sm"
+                >
+                    Delete
+                </a>
+            </div>
+        </div>
 
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'add-expense' %}" method="post" >
+                <form action="{% url 'expense-edit' expense.id %}" method="post" >
                     {% include 'partials/_messages.html' %}
                     {% csrf_token %}
                     <div class="form-group mb-2">
@@ -37,7 +49,10 @@
                     <div class="form-group mb-2">
                         <label for="category" class="form-label" >Category</label>
                         <select name="category" id="category" class="form-select">
-                            
+
+                            <option selected value="{{values.category}}" name="category">
+                                {{values.category}}
+                            </option>
                             {% for category in categories  %}
                                 <option value="{{category.name}}" name="category">
                                     {{category.name}}
@@ -55,7 +70,7 @@
                             class="form-control form-control-sm"
                         />
                     </div>
-                    <input type="submit" value="Submit" class="btn btn-primary btn-sm" />
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm" />
                 </form>
             </div>
         </div>
