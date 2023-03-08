@@ -2,12 +2,14 @@
     Views for expense app
 """
 import json
+# import pdb
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from userpreferences.models import UserPreference
 from .models import Category, Expense
 #pylint: disable=E1101
 #pylint: disable=C0103
@@ -55,9 +57,11 @@ def index(request):
     paginator = Paginator(expenses, 5)
     page_number = request.GET.get('page')
     page_obj = Paginator.get_page(paginator, page_number)
+    currency = UserPreference.objects.get(user=request.user).currency
     context = {
         'expenses': expenses,
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'currency': currency
     }
     return render(request, 'expenses/index.html', context)
 
