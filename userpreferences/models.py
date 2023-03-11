@@ -11,6 +11,6 @@ class UserPreference(models.Model):
         creates a database model for the user preferences
     """
     user = models.OneToOneField(to=User, on_delete=models.CASCADE)
-    currency = models.CharField(max_length=255, blank=True, null=True)
+    currency = models.CharField(max_length=255, default="NGN - Nigerian Naira")
     def __str__(self):
         return str(self.user)+'s'+'preferences'
