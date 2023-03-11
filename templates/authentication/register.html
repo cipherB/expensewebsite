@@ -55,6 +55,14 @@
                             disabled='true'
                         />
                     </form>
+                    <div class="container">
+                        <span class="text-lead lead" >
+                            Already have an account? <a href="{% url 'login' %}">Login</a>
+                        </span><br/>
+                        <span class="text-lead lead">
+                            Forgot password? <a href="{% url 'request-password' %}">Reset</a>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
