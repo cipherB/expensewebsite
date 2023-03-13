@@ -3,6 +3,7 @@
 """
 import json
 # import pdb
+import datetime
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -160,3 +161,33 @@ def delete_expense(request, id):
     expense.delete()
     messages.success(request, 'Expense removed')
     return redirect('expenses')
+
+def expense_category_summary(request):
+    """Return a JSON object for expenses chart"""
+    current_date = datetime.date.today()
+    six_months_ago = current_date - datetime.timedelta(days=30*6)
+    expenses = Expense.objects.filter(
+        date__gte=six_months_ago,
+        date__lte=current_date,
+        owner=request.user
+    )
+    final_rep = {}
+    #
+    def get_category(expense):
+        return expense.category
+    #
+    def get_expense_category_amount(category):
+        amount = 0
+        filtered_by_category = expenses.filter(category=category)
+        for item in filtered_by_category:
+            amount += item.amount
+        return amount
+    #
+    category_list = list(set(map(get_category, expenses)))
+    for x in expenses:
+        for y in category_list:
+            final_rep[y] = get_expense_category_amount(y)
+    return JsonResponse({'expense_category_data': final_rep}, safe=False)
+
+def stats_view(request):
+    return render(request, 'expenses/stats.html')
