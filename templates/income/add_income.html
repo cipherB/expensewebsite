@@ -4,22 +4,22 @@
     <div class="container mt-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'expenses' %}">Expenses</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Add Expenses</li>
+                <li class="breadcrumb-item"><a href="{% url 'income' %}">Income</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add Income</li>
             </ol>
         </nav>
 
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'add-expense' %}" method="post" >
+                <form action="{% url 'add-income' %}" method="post" >
                     {% include 'partials/_messages.html' %}
                     {% csrf_token %}
                     <div class="form-group mb-2">
                         <label for="amount" class="form-label">Amount</label>
                         <input 
-                            type="number" 
+                            type="number"
+                            step="any" 
                             name="amount" 
-                            step="any"
                             id="amount" 
                             class="form-control form-control-sm"
                             value="{{values.amount}}"
@@ -36,23 +36,23 @@
                         />
                     </div>
                     <div class="form-group mb-2">
-                        <label for="category" class="form-label" >Category</label>
-                        <select name="category" id="category" class="form-select">
+                        <label for="source" class="form-label" >Sources</label>
+                        <select name="source" id="source" class="form-select">
                             
-                            {% for category in categories  %}
-                                <option value="{{category.name}}" name="category">
-                                    {{category.name}}
+                            {% for source in sources  %}
+                                <option value="{{source.name}}" name="source">
+                                    {{source.name}}
                                 </option>
                             {% endfor %}
                                 
                         </select>
                     </div>
                     <div class="form-group mb-4">
-                        <label for="expense_date" class="form-label">Date of Expense</label>
+                        <label for="income_date" class="form-label">Date of Income</label>
                         <input 
                             type="date"   
-                            name="expense_date" 
-                            id="expense_date" 
+                            name="income_date" 
+                            id="income_date" 
                             class="form-control form-control-sm"
                         />
                     </div>

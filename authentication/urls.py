@@ -10,7 +10,9 @@ from .views import (
     EmailValidationView,
     VerificationView,
     LoginView,
-    LogoutView
+    LogoutView,
+    RequestPasswordResetEmail,
+    CompletePasswordChangeView
 )
 
 urlpatterns = [
@@ -26,4 +28,7 @@ urlpatterns = [
         name='validate-email'
     ),
     path('activate/<uidb64>/<token>', VerificationView.as_view(), name='activate'),
+    path('request-reset-link', RequestPasswordResetEmail.as_view(), name='request-password'),
+    path('change-password/<uidb64>/<token>',
+         CompletePasswordChangeView.as_view(), name='change-password'),
 ]

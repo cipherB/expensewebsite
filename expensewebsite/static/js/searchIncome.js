@@ -8,9 +8,11 @@ tableOutput.style.display = "none";
 
 searchField.addEventListener('keyup', (e) => {
     const searchValue = e.target.value;
+
     if(searchValue.trim().length>0) {
         paginationContainer.style.display = "none";
-        fetch('/search-expenses', {
+        tbody.innerHTML = "";
+        fetch('/income/search-incomes', {
             body: JSON.stringify({searchText: searchValue}),
             method: "POST",
         }).then(res => res.json())
@@ -27,7 +29,7 @@ searchField.addEventListener('keyup', (e) => {
                     tbody.innerHTML += `
                     <tr key=${id} >
                         <td>${item.amount}</td>
-                        <td>${item.category}</td>
+                        <td>${item.source}</td>
                         <td>${item.description}</td>
                         <td>${item.date}</td>
                     </tr>

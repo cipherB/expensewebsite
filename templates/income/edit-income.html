@@ -2,16 +2,28 @@
 
 {% block content %}
     <div class="container mt-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'expenses' %}">Expenses</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Add Expenses</li>
-            </ol>
-        </nav>
+        <div class="row mb-4">
+            <div class="col-md-10">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'income' %}">Income</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit Income</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-md-2">
+                <a 
+                    href="{% url 'income-delete' income.id %}"
+                    class="btn btn-danger btn-sm"
+                >
+                    Delete
+                </a>
+            </div>
+        </div>
 
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'add-expense' %}" method="post" >
+                <form action="{% url 'income-edit' income.id %}" method="post" >
                     {% include 'partials/_messages.html' %}
                     {% csrf_token %}
                     <div class="form-group mb-2">
@@ -19,7 +31,6 @@
                         <input 
                             type="number" 
                             name="amount" 
-                            step="any"
                             id="amount" 
                             class="form-control form-control-sm"
                             value="{{values.amount}}"
@@ -36,27 +47,31 @@
                         />
                     </div>
                     <div class="form-group mb-2">
-                        <label for="category" class="form-label" >Category</label>
-                        <select name="category" id="category" class="form-select">
-                            
-                            {% for category in categories  %}
-                                <option value="{{category.name}}" name="category">
-                                    {{category.name}}
+                        <label for="source" class="form-label" >Source</label>
+                        <select name="source" id="source" class="form-select">
+
+                            <option selected value="{{values.source}}" name="source">
+                                {{values.source}}
+                            </option>
+                            {% for source in sources  %}
+                                <option value="{{source.name}}" name="source">
+                                    {{source.name}}
                                 </option>
                             {% endfor %}
                                 
                         </select>
                     </div>
                     <div class="form-group mb-4">
-                        <label for="expense_date" class="form-label">Date of Expense</label>
+                        <label for="income_date" class="form-label">Date of Income</label>
                         <input 
                             type="date"   
-                            name="expense_date" 
-                            id="expense_date" 
+                            name="income_date" 
+                            id="income_date" 
                             class="form-control form-control-sm"
+                            value="{{values.date | date:'Y-m-d'}}"
                         />
                     </div>
-                    <input type="submit" value="Submit" class="btn btn-primary btn-sm" />
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm" />
                 </form>
             </div>
         </div>

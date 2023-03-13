@@ -3,7 +3,7 @@
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from six import text_type
 
-class AppTokenGenerator(PasswordResetTokenGenerator):
+class TokenGenerator(PasswordResetTokenGenerator):
     """Token generator class
 
     Args:
@@ -19,6 +19,10 @@ class AppTokenGenerator(PasswordResetTokenGenerator):
         Returns:
             string: returns a string containing a generated token
         """
-        return (text_type(user.is_active)+text_type(user.pk)+text_type(timestamp))
+        return (
+            text_type(user.pk) + text_type(timestamp) +
+            text_type(user.is_active)
+        )
 
-token_generator = AppTokenGenerator()
+
+account_activation_token = TokenGenerator()
