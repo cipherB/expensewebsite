@@ -1,15 +1,22 @@
 """
     Views for expense app
 """
+import os
+import tempfile
 import json
+import csv
 # import pdb
 import datetime
+import xlwt
+from weasyprint import HTML
+from django.db.models import Sum
+from django.template.loader import render_to_string
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from userpreferences.models import UserPreference
 from .models import Category, Expense
 #pylint: disable=E1101
@@ -184,10 +191,69 @@ def expense_category_summary(request):
         return amount
     #
     category_list = list(set(map(get_category, expenses)))
-    for x in expenses:
+    for _ in expenses:
         for y in category_list:
             final_rep[y] = get_expense_category_amount(y)
     return JsonResponse({'expense_category_data': final_rep}, safe=False)
 
 def stats_view(request):
+    """Return the expense summary page"""
     return render(request, 'expenses/stats.html')
+
+def export_csv(request):
+    """Create csv file from expenses table"""
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=Expenses'+str(
+        datetime.datetime.now())+'.csv'
+    writer = csv.writer(response)
+    writer.writerow(['Amount', 'Description', 'Category', 'Date'])
+    expenses = Expense.objects.filter(owner=request.user)
+    for expense in expenses:
+        writer.writerow([expense.amount, expense.description, expense.category, expense.date])
+    return response
+
+def export_excel(request):
+    """Create an excel file from expenses table"""
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Expenses'+str(
+        datetime.datetime.now())+'.xls'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Expenses')
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+    columns = ['Amount', 'Description', 'Category', 'Date']
+    for col_num ,label in enumerate(columns):
+        ws.write(row_num, col_num, label, font_style)
+    font_style = xlwt.XFStyle()
+    rows = Expense.objects.filter(owner=request.user).values_list(
+        'amount',
+        'description',
+        'category',
+        'date'
+    )
+    for row in rows:
+        row_num += 1
+        for col_num, data_item in enumerate(row):
+            ws.write(row_num, col_num, str(data_item), font_style)
+    wb.save(response)
+    return response
+
+def export_pdf(request):
+    """Create an excel file from expenses table"""
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; attachment; filename=Expenses'+str(
+        datetime.datetime.now())+'.pdf'
+    response['Content-Transfer-Encoding'] = 'binary'
+    expenses = Expense.objects.filter(owner=request.user)
+    sum = expenses.aggregate(Sum('amount'))
+    html_string = render_to_string('expenses/pdf-output.html', 
+                                   {'expenses': expenses, 'total': sum['amount__sum']})
+    html = HTML(string=html_string)
+    result = html.write_pdf()
+    with tempfile.NamedTemporaryFile(delete=False)as output:
+        output.write(result)
+        output.flush()
+        output = open(output.name, 'rb')
+        response.write(output.read())
+    return response
