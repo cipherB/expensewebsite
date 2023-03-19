@@ -115,6 +115,7 @@ def add_expense(request):
 
 def expense_edit(request, id):
     """Edit Expenses
+    New update on site
 
     Args:
         request (JSON): Takes request
